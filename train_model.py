@@ -1,27 +1,37 @@
 import pandas as pd
+import pickle
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-import pickle
+from sklearn.model_selection import train_test_split
 
+# Load datasets
 fake = pd.read_csv("Fake.csv")
-real = pd.read_csv("True.csv")
+true = pd.read_csv("True.csv")
 
-fake["label"] = 0
-real["label"] = 1
+# Add labels
+fake["label"] = 0   # Fake news
+true["label"] = 1   # Real news
 
-data = pd.concat([fake, real])
-data = data.sample(frac=1)
+# Combine datasets
+data = pd.concat([fake, true])
 
+# Use the TEXT column from CSV
 X = data["text"]
 y = data["label"]
 
+# Split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+# Vectorizer
 vectorizer = TfidfVectorizer(stop_words="english", max_df=0.7)
-X_vec = vectorizer.fit_transform(X)
+X_train_vec = vectorizer.fit_transform(X_train)
 
+# Train model
 model = LogisticRegression()
-model.fit(X_vec, y)
+model.fit(X_train_vec, y_train)
 
-pickle.dump(model, open("model.pkl","wb"))
-pickle.dump(vectorizer, open("vectorizer.pkl","wb"))
+# Save model
+pickle.dump(model, open("model.pkl", "wb"))
+pickle.dump(vectorizer, open("vectorizer.pkl", "wb"))
 
-print("Large AI Model Trained Successfully")
+print("Model trained and saved successfully")
