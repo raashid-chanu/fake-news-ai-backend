@@ -9,18 +9,18 @@ fake = pd.read_csv("Fake.csv")
 true = pd.read_csv("True.csv")
 
 # Add labels
-fake["label"] = 0   # Fake news
-true["label"] = 1   # Real news
+fake["label"] = 0   # Fake
+true["label"] = 1   # Real
 
-# Combine datasets
-data = pd.concat([fake, true])
+# Combine
+data = pd.concat([fake, true], axis=0)
 
-# Use the TEXT column from CSV
+# Use correct column from CSV
 X = data["text"]
 y = data["label"]
 
 # Split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Vectorizer
 vectorizer = TfidfVectorizer(stop_words="english", max_df=0.7)
@@ -34,4 +34,4 @@ model.fit(X_train_vec, y_train)
 pickle.dump(model, open("model.pkl", "wb"))
 pickle.dump(vectorizer, open("vectorizer.pkl", "wb"))
 
-print("Model trained and saved successfully")
+print("Model trained successfully")
