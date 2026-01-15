@@ -1,3 +1,4 @@
+# redeploy
 import pandas as pd
 import pickle
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -35,3 +36,4 @@ pickle.dump(model, open("model.pkl", "wb"))
 pickle.dump(vectorizer, open("vectorizer.pkl", "wb"))
 
 print("Model trained successfully")
+force redeploy
