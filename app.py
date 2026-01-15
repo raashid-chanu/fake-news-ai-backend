@@ -5,33 +5,29 @@ import pickle
 app = Flask(__name__)
 CORS(app)
 
-# Load trained model and vectorizer
+# Load model and vectorizer
 model = pickle.load(open("model.pkl", "rb"))
 vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def home():
     return "Fake News AI Backend is Running"
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    try:
-        data = request.get_json()
-        text = data.get("text")
+    data = request.get_json(force=True)
 
-        if not text:
-            return jsonify({"error": "No text provided"}), 400
+    if "text" not in data:
+        return jsonify({"error": "No text field found"}), 400
 
-        vectorized = vectorizer.transform([text])
-        prediction = model.predict(vectorized)[0]
+    text = data["text"]
 
-        result = "Fake" if prediction == 1 else "Real"
+    vect = vectorizer.transform([text])
+    pred = model.predict(vect)[0]
 
-        return jsonify({"prediction": result})
+    result = "Fake" if pred == 1 else "Real"
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
+    return jsonify({"prediction": result})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
